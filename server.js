@@ -7,10 +7,10 @@ const socket = require("socket.io");
 const app = express();
 const tasks = [];
 
-app.use(express.static(path.join(__dirname, '/client')));
+app.use(express.static(path.join(__dirname, '/client/build')));
 
 app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname + '/client/src/index.js'));
+  res.sendFile(path.join(__dirname + '/client/build/index.html'));
 });
 
 
@@ -27,22 +27,24 @@ const io = socket(server);
 
 io.on('connection', (socket) => {
     socket.emit('updateData', tasks);
+
+    socket.on('addTask', (task) => {
+      console.log('Just added new task' + task)
+    
+      tasks.push(task);
+      socket.broadcast.emit ('addTask', task);
+    });
+    
+    socket.on('removeTask', index => {
+      console.log('Just removed a task with index' + index);
+    
+      tasks(task => task.index != index)
+      socket.broadcast.emit ('removeTask', task)
+    
+    });
   });
 
-io.on('addTask', (task) => {
-  console.log('Just added new task' + task)
 
-  tasks.push(task);
-  socket.broadcast.emit ('addTask', task);
-});
-
-io.on('removeTask', index => {
-  console.log('Just removed a task with index' + index);
-
-  tasks.filter(task => task.index != index)
-  socket.broadcast.emit ('removeTask', task)
-
-});
 
 {/*
 REMOVING A VALUE FROM AN ARRAY

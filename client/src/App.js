@@ -38,15 +38,31 @@ class App extends React.Component {
   };
 
   updateTasks(taskList) {
-    this.setState({tasks: taskList})
+    this.setState({
+      ...this.state,
+      tasks: taskList})
 
   }
 
-  removeTask(id) {
+  updateTaskName(taskName) {
     this.setState({
+      ...this.state,
+      taskName
+    })
+  }
+
+  removeTask(id) { 
+    this.setState({
+      ...this.state,
       tasks: this.state.tasks.filter(task => task.id !== id)
     });
   }
+
+  removeTaskHandler(id) {
+    this.removeTask(id);
+    this.socket.emit('removeTask', id)
+  }
+
 
   addTask(newTask) {
     this.setState({ tasks: [...this.state.tasks, newTask] })
@@ -54,7 +70,7 @@ class App extends React.Component {
 
   submitForm(e){
     e.preventDefault();
-      const newTask = {name: this.state.taskName, id:uuidv4()}
+    const newTask = {name: this.state.taskName, id: uuidv4()}
     this.addTask(newTask);
     this.socket.emit('addTask', newTask);
 
@@ -80,26 +96,26 @@ class App extends React.Component {
                 {task.name}
                 <button 
                 className="btn btn--red" 
-                onClick={(event) => event.removeTask()} > {/*usunięcie taska o podanym id ?? */}
+                onClick={() => this.removeTaskHandler(task.id)} > 
                   Remove
             </button>
               </li>
-            ))};
+            ))}
       </ul>
 
-          <form id="add-task-form">
+          <form id="add-task-form" onSubmit={(event) => {this.submitForm(event)}}>
             <input
               className="text-input"
               autoComplete="off"
               type="text"
               placeholder="Type your description"
               id="task-name"
-              //onChange={event => this.updateTasks(event.value)}
+              onChange={event => this.updateTaskName(event.target.value)}
             />
             <button 
             className="btn" 
             type="submit" 
-            onSubmit={(event) => { this.submitForm(event) }}>
+            >
               Add
             </button>
           </form>
@@ -107,8 +123,8 @@ class App extends React.Component {
         </section>
       </div>
     );
-  };
+  }
 
-};
+}
 
-export default App;
+export default App
