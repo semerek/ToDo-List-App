@@ -35,10 +35,10 @@ io.on('connection', (socket) => {
       socket.broadcast.emit ('addTask', task);
     });
     
-    socket.on('removeTask', index => {
-      console.log('Just removed a task with index' + index);
+    socket.on('removeTask', id => {
+      console.log('Just removed a task with index' + id);
     
-      tasks(task => task.index != index)
+      const task = tasks.find(task => task.id === id)
       socket.broadcast.emit ('removeTask', task)
     
     });

@@ -30,8 +30,8 @@ class App extends React.Component {
       this.addTask(task);
     });
 
-    this.socket.on('removeTask', id => {
-      this.removeTask(id);
+    this.socket.on('removeTask', task => {
+      this.removeTask(task.id);
     });
 
 
